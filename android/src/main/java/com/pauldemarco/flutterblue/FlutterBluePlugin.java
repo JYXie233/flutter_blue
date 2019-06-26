@@ -215,6 +215,7 @@ public class FlutterBluePlugin implements MethodCallHandler, RequestPermissionsR
 
                 // New request, connect and add gattServer to Map
                 BluetoothGatt gattServer = device.connectGatt(activity, options.getAndroidAutoConnect(), mGattCallback);
+                gattServer.connect();
                 mGattServers.put(deviceId, gattServer);
                 result.success(null);
                 break;
@@ -594,7 +595,8 @@ public class FlutterBluePlugin implements MethodCallHandler, RequestPermissionsR
         try {
             settings = Protos.ScanSettings.newBuilder().mergeFrom(data).build();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                startScan21(settings);
+//                startScan21(settings);
+                startScan18(settings);
             } else {
                 startScan18(settings);
             }
@@ -606,7 +608,8 @@ public class FlutterBluePlugin implements MethodCallHandler, RequestPermissionsR
 
     private void stopScan() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            stopScan21();
+//            stopScan21();
+            stopScan18();
         } else {
             stopScan18();
         }
