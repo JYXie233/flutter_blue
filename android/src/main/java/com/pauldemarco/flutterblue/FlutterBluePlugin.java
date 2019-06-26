@@ -688,7 +688,7 @@ public class FlutterBluePlugin implements MethodCallHandler, RequestPermissionsR
         for(int i = 0; i < serviceUuids.size(); i++) {
             uuids[i] = UUID.fromString(serviceUuids.get(i));
         }
-        boolean success = mBluetoothAdapter.startLeScan(uuids, getScanCallback18());
+        boolean success = mBluetoothAdapter.startLeScan(getScanCallback18());
         if(!success) throw new IllegalStateException("getBluetoothLeScanner() is null. Is the Adapter on?");
     }
 
