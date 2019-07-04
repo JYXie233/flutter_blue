@@ -226,9 +226,14 @@ public class FlutterBluePlugin implements MethodCallHandler, RequestPermissionsR
                 String deviceId = (String)call.arguments;
                 BluetoothGatt gattServer = mGattServers.remove(deviceId);
                 if(gattServer != null) {
-                    gattServer.disconnect();
-                    gattServer.close();
-                    gattServer = null;
+                    try {
+                        gattServer.disconnect();
+                        gattServer.close();
+                        gattServer = null;
+                    }catch (Exception e){
+                        log(LogLevel.ERROR, e.getMessage());
+                    }
+
                 }
                 result.success(null);
                 break;
@@ -559,14 +564,17 @@ public class FlutterBluePlugin implements MethodCallHandler, RequestPermissionsR
                 if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
                     final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,
                             BluetoothAdapter.ERROR);
+
                     switch (state) {
                         case BluetoothAdapter.STATE_OFF:
+                            log(LogLevel.DEBUG, "[手机蓝牙状态] status: 关闭" );
                             sink.success(Protos.BluetoothState.newBuilder().setState(Protos.BluetoothState.State.OFF).build().toByteArray());
                             break;
                         case BluetoothAdapter.STATE_TURNING_OFF:
                             sink.success(Protos.BluetoothState.newBuilder().setState(Protos.BluetoothState.State.TURNING_OFF).build().toByteArray());
                             break;
                         case BluetoothAdapter.STATE_ON:
+                            log(LogLevel.DEBUG, "[手机蓝牙状态] status: 打开" );
                             sink.success(Protos.BluetoothState.newBuilder().setState(Protos.BluetoothState.State.ON).build().toByteArray());
                             break;
                         case BluetoothAdapter.STATE_TURNING_ON:
@@ -704,9 +712,6 @@ public class FlutterBluePlugin implements MethodCallHandler, RequestPermissionsR
             log(LogLevel.DEBUG, "[onConnectionStateChange] status: " + status + " newState: " + newState);
             if(newState == BluetoothProfile.STATE_DISCONNECTED) {
                 if(!mGattServers.containsKey(gatt.getDevice().getAddress())) {
-                    gatt.close();
-                }else{
-                    mGattServers.remove(gatt.getDevice().getAddress());
                     gatt.close();
                 }
             }
